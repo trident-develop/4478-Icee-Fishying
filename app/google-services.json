@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "440230395317",
+    "project_id": "icee-fishying",
+    "storage_bucket": "icee-fishying.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440230395317:android:03275d7b6bea91a3e66dfc",
+        "android_client_info": {
+          "package_name": "com.zebr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxhg6l4_IiAMHwpw47ooWBp3cAihkcZ2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

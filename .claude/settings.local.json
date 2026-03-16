@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/anna/AndroidStudioProjects/IceeFishying/app/src/test -type f -name \"*.kt\" -o -name \"*.java\" 2>/dev/null | head -10)",
+      "Bash(find /Users/anna/AndroidStudioProjects/IceeFishying/app/src/androidTest -type f -name \"*.kt\" -o -name \"*.java\" 2>/dev/null | head -10)",
+      "Bash(./gradlew assembleDebug 2>&1 | tail -80)",
+      "Bash(JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew assembleDebug 2>&1 | tail -100)"
+    ]
+  }
+}
