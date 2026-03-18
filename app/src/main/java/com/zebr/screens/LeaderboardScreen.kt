@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,13 +35,12 @@ fun LeaderboardScreen(
     bestScore: Int,
     onBackClick: () -> Unit
 ) {
-    val mockEntries = listOf(
-        LeaderboardEntry("Captain Nemo", 2500, 30),
-        LeaderboardEntry("Pearl Diver", 1800, 25),
-        LeaderboardEntry("Sea Hunter", 1200, 20),
-        LeaderboardEntry("Wave Rider", 800, 15),
-        LeaderboardEntry("Shell Seeker", 500, 10)
-    )
+    val leaderboardEntries = remember(unlockedLevel, bestScore) {
+        buildLeaderboardEntries(
+            unlockedLevel = unlockedLevel,
+            bestScore = bestScore
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -56,7 +56,6 @@ fun LeaderboardScreen(
                 .padding(top = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,7 +79,6 @@ fun LeaderboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Player stats card
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
@@ -100,6 +98,7 @@ fun LeaderboardScreen(
                         fontSize = 22.sp,
                         fontFamily = GameFont
                     )
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
@@ -123,7 +122,6 @@ fun LeaderboardScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Mock leaderboard
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
@@ -131,13 +129,59 @@ fun LeaderboardScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                mockEntries.forEachIndexed { index, entry ->
+                leaderboardEntries.forEachIndexed { index, entry ->
                     LeaderboardRow(rank = index + 1, entry = entry)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
+}
+
+private fun targetScoreForLevel(level: Int): Int {
+    return 10 + (level - 1) * 3
+}
+
+private fun generatedScoreForLevel(level: Int): Int {
+    val targetScore = targetScoreForLevel(level)
+    return targetScore * 100
+}
+
+private fun buildLeaderboardEntries(
+    unlockedLevel: Int,
+    bestScore: Int
+): List<LeaderboardEntry> {
+    val mockEntries = listOf(
+        LeaderboardEntry("Captain Nemo", targetScoreForLevel(30), 30),
+        LeaderboardEntry("Pearl Diver", targetScoreForLevel(27), 27),
+        LeaderboardEntry("Sea Hunter", targetScoreForLevel(25), 25),
+        LeaderboardEntry("Wave Rider", targetScoreForLevel(22), 22),
+        LeaderboardEntry("Shell Seeker", targetScoreForLevel(20), 20),
+        LeaderboardEntry("Coral Scout", targetScoreForLevel(18), 18),
+        LeaderboardEntry("Deep Voyager", targetScoreForLevel(16), 16),
+        LeaderboardEntry("Ocean Blade", targetScoreForLevel(14), 14),
+        LeaderboardEntry("Treasure Finn", targetScoreForLevel(12), 12),
+        LeaderboardEntry("Storm Sailor", targetScoreForLevel(2), 2)
+    ).toMutableList()
+
+    val shouldAddYou = mockEntries.any { unlockedLevel > it.level }
+
+    if (shouldAddYou) {
+        mockEntries.add(
+            LeaderboardEntry(
+                name = "You",
+                score = bestScore,
+                level = unlockedLevel
+            )
+        )
+    }
+
+    return mockEntries
+        .sortedWith(
+            compareByDescending<LeaderboardEntry> { it.level }
+                .thenByDescending { it.score }
+        )
+        .take(10)
 }
 
 @Composable
@@ -167,11 +211,14 @@ private fun LeaderboardRow(rank: Int, entry: LeaderboardEntry) {
         else -> Color.White
     }
 
+    val isYou = entry.name == "You"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Color.White.copy(alpha = 0.3f),
+                if (isYou) Color(0xFF4FC3F7).copy(alpha = 0.35f)
+                else Color.White.copy(alpha = 0.3f),
                 RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -184,6 +231,7 @@ private fun LeaderboardRow(rank: Int, entry: LeaderboardEntry) {
             fontFamily = GameFont,
             modifier = Modifier.padding(end = 16.dp)
         )
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = entry.name,
@@ -198,6 +246,7 @@ private fun LeaderboardRow(rank: Int, entry: LeaderboardEntry) {
                 fontFamily = GameFont
             )
         }
+
         Text(
             text = "${entry.score}",
             color = TealDark,
