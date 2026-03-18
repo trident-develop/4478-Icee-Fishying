@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Icee Fishying is a casual fishing game for Android, built with Kotlin and Jetpack Compose. The app is in early development — activity shells and game assets (fish sprites, coral, audio) are in place but core game logic is not yet implemented.
 
-**Package:** `com.zebr`
+**Package:** `photo.editor.photoeditor.filtersforpictu`
 
 ## Build Commands
 

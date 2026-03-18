@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:440230395317:android:03275d7b6bea91a3e66dfc",
+        "mobilesdk_app_id": "1:440230395317:android:23a3b330d14cfa34e66dfc",
         "android_client_info": {
-          "package_name": "com.zebr"
+          "package_name": "photo.editor.photoeditor.filtersforpictu"
         }
       },
       "oauth_client": [],
