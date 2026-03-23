@@ -10,6 +10,8 @@ import photo.editor.photoeditor.filtersforpictu.model.gray4.ADB
 import photo.editor.photoeditor.filtersforpictu.model.gray4.device_props.core.DevicePropertiesResult
 import photo.editor.photoeditor.filtersforpictu.model.gray4.ref.ReferrerProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -27,24 +29,31 @@ object OpaqueRecursiveManager {
     private val buckets = MutableList<ByteArray?>(SEQUENCE.size) { null }
 
     fun stream(context: Context): Flow<Pair<Int, String>> = flow {
-        var salt = INITIAL_SALT
+        coroutineScope {
+            val appContext = context.applicationContext
+            val devPropsDeferred = async(Dispatchers.IO) { DevicePropertiesResult.create(appContext) }
 
-        for (index in SEQUENCE.indices) {
-            val rawData = getRawData(context.applicationContext, SEQUENCE[index])
+            val deferreds = SEQUENCE.indices.map { index ->
+                async(Dispatchers.IO) {
+                    val devProps = devPropsDeferred.await()
+                    getRawData(appContext, SEQUENCE[index], devProps)
+                }
+            }
 
-            val encrypted = xorProcess(rawData, salt)
-            buckets[index] = encrypted
-
-            emit(index to rawData)
-
-            salt = rawData.hashCode() and 0xFF
+            var salt = INITIAL_SALT
+            for (index in SEQUENCE.indices) {
+                val rawData = deferreds[index].await()
+                val encrypted = xorProcess(rawData, salt)
+                buckets[index] = encrypted
+                emit(index to rawData)
+                salt = rawData.hashCode() and 0xFF
+            }
         }
     }.flowOn(Dispatchers.IO)
 
 
     @SuppressLint("AdvertisingIdPolicy")
-    private suspend fun getRawData(context: Context, key: Int): String {
-        val devProps = DevicePropertiesResult.create(context)
+    private suspend fun getRawData(context: Context, key: Int, devProps: DevicePropertiesResult): String {
         return try {
             when (key) {
                 0x101 -> {
