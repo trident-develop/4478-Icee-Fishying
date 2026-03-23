@@ -75,6 +75,7 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
 
     var ready  by remember { mutableStateOf<Boolean>(false) }
     var savedLink2  by remember { mutableStateOf<String?>(null) }
+    var linkFlowStarted by remember { mutableStateOf(false) }
 
     LaunchedEffect(storageState) {
         val state = storageState
@@ -123,6 +124,8 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
         val sav = savedLink2
         val savst = savedStub
         if(!ready || sav == null || savst == null) return@LaunchedEffect
+        if(linkFlowStarted) return@LaunchedEffect
+        linkFlowStarted = true
         Log.d("TAGG", "Saved link : $sav")
         if(!sav.startsWith(";ff;")) {
             Log.d("TAGG", "open web")
