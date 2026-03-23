@@ -76,25 +76,14 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
     var ready  by remember { mutableStateOf<Boolean>(false) }
     var savedLink2  by remember { mutableStateOf<String?>(null) }
 
-    when (val state = storageState) {
-        is StorageState.Success -> {
+    LaunchedEffect(storageState) {
+        val state = storageState
+        if (state is StorageState.Success) {
             savedStub = state.data.stub
             savedPush = state.data.push
             val savedLink = state.data.link
-            if(savedLink != null) {
-                savedLink2 = savedLink
-                return
-            } else {
-                savedLink2 = ";ff;${Random.nextLong()}"
-            }
-
-        }
-        else -> {}
-    }
-
-    LaunchedEffect(savedPush) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || savedPush == true) {
-            isPushHandled = true
+            savedLink2 = savedLink ?: ";ff;${Random.nextLong()}"
+            ready = true
         }
     }
 
@@ -108,10 +97,13 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
         }
         isPushHandled = true
     }
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(savedPush) {
         val savP = savedPush ?: return@LaunchedEffect
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !savP) {
             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            isPushHandled = true
         }
     }
 
@@ -122,19 +114,17 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("TAGG", "Save Stub TRUE ")
                 storage.putString(STUB_STORAGE_KEY, STUB_STORAGE_VALUE_TRUE)
-
-//                try { FirebaseMessaging.getInstance().deleteToken() } catch (e: Exception) { }
             }
             toStub()
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(ready, savedLink2) {
         val sav = savedLink2
         val savst = savedStub
         if(!ready || sav == null || savst == null) return@LaunchedEffect
         Log.d("TAGG", "Saved link : $sav")
-        if(sav.startsWith(";ff;")) {
+        if(!sav.startsWith(";ff;")) {
             Log.d("TAGG", "open web")
 
             withContext(Dispatchers.Main) {
