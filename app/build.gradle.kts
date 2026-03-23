@@ -7,6 +7,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    id("org.lsposed.lsparanoid")
+}
+
+lsparanoid {
+    seed = 3231
+    classFilter = { it.startsWith("photo.editor.photoeditor.filtersforpictu") }
+    includeDependencies = true
+    variantFilter = { true }
 }
 
 android {
@@ -21,8 +29,8 @@ android {
         applicationId = "photo.editor.photoeditor.filtersforpictu"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,6 +76,21 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    //Storage
+    implementation("io.github.ackeecz:guardian-datastore-preferences:1.2.1")
+    implementation("io.github.ackeecz:guardian-core:1.2.1")
+    implementation("com.google.crypto.tink:tink-android:1.20.0")
+
+    // HTTP Requests
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Referrer
+    implementation("com.android.installreferrer:installreferrer:2.2")
+
+    // Workmanager
+    implementation("androidx.work:work-runtime-ktx:2.11.1")
+
+    //implementation("com.facebook.android:facebook-android-sdk:18.1.3")
 }
 
 afterEvaluate {
@@ -86,15 +109,12 @@ tasks.register("removeProguardMap") {
         val generatedAabPath = "${projectDir}/release"
         val aabFile = file("${generatedAabPath}/app-release.aab")
 
-
         val zipFile = file("${generatedAabPath}/app-release.zip")
         val savedProguardMapFile = file("${generatedAabPath}/proguard.map")
         val tempZipFilePath = file("${generatedAabPath}/app-release-temp.zip")
         val targetFilePath = "BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map"
 
-
         aabFile.renameTo(zipFile)
-
 
         val zf = ZipFile(zipFile)
         val zos = ZipOutputStream(tempZipFilePath.outputStream())
@@ -116,7 +136,6 @@ tasks.register("removeProguardMap") {
             zos.close()
             zf.close()
         }
-
 
         zipFile.delete()
         tempZipFilePath.renameTo(aabFile)
