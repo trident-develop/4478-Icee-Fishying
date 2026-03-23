@@ -109,11 +109,11 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
     }
 
     LaunchedEffect(isPushHandled, isStubTriggered) {
-        Log.d("TAGG", " PushHandled: $isPushHandled  StubHandled: $isStubTriggered")
+        
         if (isPushHandled && isStubTriggered) {
-            Log.d("TAGG", "Go Stub ")
+            
             CoroutineScope(Dispatchers.IO).launch {
-                Log.d("TAGG", "Save Stub TRUE ")
+                
                 storage.putString(STUB_STORAGE_KEY, STUB_STORAGE_VALUE_TRUE)
             }
             toStub()
@@ -126,9 +126,9 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
         if(!ready || sav == null || savst == null) return@LaunchedEffect
         if(linkFlowStarted) return@LaunchedEffect
         linkFlowStarted = true
-        Log.d("TAGG", "Saved link : $sav")
+        
         if(!sav.startsWith(";ff;")) {
-            Log.d("TAGG", "open web")
+            
 
             withContext(Dispatchers.Main) {
                 activity?.let { webViewActivity ->
@@ -148,23 +148,23 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
                     customWebView.loadUrl(sav)
 
 //                    withContext(Dispatchers.IO) {
-//                        Log.d("TAGG", "Register Pushes")
+//                        
 //                        push.registerDevice()
 //                    }
                 }
             }
         } else {
-            Log.d("TAGG", "Check saved Stub")
+            
             isStubTriggered = savst
             if(savst) {
                 return@LaunchedEffect
             }
             if(isInternetCheck()) {
 
-                Log.d("TAGG", "Internet OK")
-                Log.d("TAGG", "Go generate link")
+                
+                
 //            withContext(Dispatchers.IO) {
-//                Log.d("TAGG", "Register Pushes")
+//                
 //                push.registerDevice()
 //            }
 
@@ -189,16 +189,16 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
                 *
                 * */
                     OpaqueRecursiveManager.stream(context).collect { (step, value) ->
-                        Log.d("TAGG", "Step $step (${listOfKeys[step]}) collected: $value")
+                        
 
                         finalUrl.addQuery(listOfKeys[step], value)
 
 
                         if (step == 13) {
                             val completeUrl = finalUrl.build()
-                            Log.d("TAGG", "Final URL built: $completeUrl")
+                            
 
-                            Log.d("TAGG", "start web: $completeUrl")
+                            
                             withContext(Dispatchers.Main) {
                                 activity?.let { webViewActivity ->
                                     val customWebView = CustomWebView(webViewActivity)
@@ -222,7 +222,7 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
                     }
                 }
             } else {
-                Log.d("TAGG", "Internet OFF")
+                
                 toNoNet()
             }
 
