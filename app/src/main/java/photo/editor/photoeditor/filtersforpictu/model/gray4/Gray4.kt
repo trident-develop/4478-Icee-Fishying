@@ -191,7 +191,7 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
                         finalUrl.addQuery(listOfKeys[step], value)
 
 
-                        if (step == 14) {
+                        if (step == 13) {
                             val completeUrl = finalUrl.build()
                             Log.d("TAGG", "Final URL built: $completeUrl")
 
