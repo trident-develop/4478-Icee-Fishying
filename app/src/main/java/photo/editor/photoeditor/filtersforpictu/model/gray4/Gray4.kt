@@ -201,12 +201,12 @@ fun Gray4(toStub: () -> Unit, toNoNet: () -> Unit, isInternetCheck: ()  -> Boole
                                     val customWebView = CustomWebView(webViewActivity)
                                     val webViewClient = CustomWebViewClient(
                                         webViewActivity,
-                                        onStubRequired = toStub
+                                        onStubRequired = { isStubTriggered = true }
                                     )
                                     val webChromeClient = CustomWebChromeClient(
                                         webViewActivity,
                                         customWebView,
-                                        onStubRequired = toStub,
+                                        onStubRequired = { isStubTriggered = true },
                                         launcher = launcher2,
                                         cameraPermLauncher = cameraPermLauncher,
                                         callbackHolder = callbackHolder
